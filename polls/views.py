@@ -7,12 +7,14 @@ from django.template import loader
 # Create your views here.
 def index(request):
     latest_question_list = Question.objects.order_by('-published_date')[:5] #'-published_date' set decending order 
-    template = loader.get_template('polls/index.html')
+    # template = loader.get_template('polls/index.html')
     context = {
         'latest_question_list' : latest_question_list,
     }
 
-    return HttpResponse(template.render(context,request))
+    # return HttpResponse(template.render(context,request))
+
+    return render(request,'polls/index.html',context)
 
 
 
