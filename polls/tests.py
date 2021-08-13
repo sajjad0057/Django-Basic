@@ -6,33 +6,33 @@ from .models import Question
 
 # Create your tests here.
 
-# class QuestionModelTest(TestCase):
+class QuestionModelTest(TestCase):
 
-#     """
-#     was_published_recently() returns False for questions whose pub_date
-#     is in the future.
+    """
+    was_published_recently() returns False for questions whose pub_date
+    is in the future.
 
-#     ** here f_q = future Question . 
-#     """
-#     def test_was_pub_recently_with_future_question(self):  #Methods are must be start with 'test' keyword . 
-#         time = timezone.now() + datetime.timedelta(days=30)
-#         print("Actual Time ----->",timezone.now())
-#         print("Future time -----> ",time)
-#         future_question = Question(published_date = time )
-#         self.assertIs(future_question.was_published_recently(),False)
+    ** here f_q = future Question . 
+    """
+    def test_was_pub_recently_with_future_question(self):  #Methods are must be start with 'test' keyword . 
+        time = timezone.now() + datetime.timedelta(days=30)
+        print("Actual Time ----->",timezone.now())
+        print("Future time -----> ",time)
+        future_question = Question(published_date = time )
+        self.assertIs(future_question.was_published_recently(),False)
 
 
-#     def test_was_pub_recently_with_old_question(self):  #Methods are must be start with 'test' keyword . 
-#         time = timezone.now() - datetime.timedelta(days=1,seconds=1)
-#         print("Old time --------> ",time)
-#         old_question = Question(published_date = time )
-#         self.assertIs(old_question.was_published_recently(),False)
+    def test_was_pub_recently_with_old_question(self):  #Methods are must be start with 'test' keyword . 
+        time = timezone.now() - datetime.timedelta(days=1,seconds=1)
+        print("Old time --------> ",time)
+        old_question = Question(published_date = time )
+        self.assertIs(old_question.was_published_recently(),False)
 
-#     def test_was_pub_recently_with_recent_question(self):  #Methods are must be start with 'test' keyword . 
-#         time = timezone.now() - datetime.timedelta(hours=23,minutes=59,seconds=59)
-#         print("Recent time ------->",time)
-#         recent_question = Question(published_date = time )
-#         self.assertIs(recent_question.was_published_recently(),True)
+    def test_was_pub_recently_with_recent_question(self):  #Methods are must be start with 'test' keyword . 
+        time = timezone.now() - datetime.timedelta(hours=23,minutes=59,seconds=59)
+        print("Recent time ------->",time)
+        recent_question = Question(published_date = time )
+        self.assertIs(recent_question.was_published_recently(),True)
 
 
 
@@ -47,6 +47,8 @@ def create_question(question_text, days):
     """
     time = timezone.now() + datetime.timedelta(days=days)
     return Question.objects.create(question_text=question_text, published_date=time)
+
+
 
 class QuestionIndexViewTests(TestCase):
     def test_no_questions(self):
@@ -108,3 +110,23 @@ class QuestionIndexViewTests(TestCase):
 
 
 
+class QuestionDetailViewTests(TestCase):
+    def test_future_question(self):
+        """
+        The detail view of a question with a pub_date in the future
+        returns a 404 not found.
+        """
+        future_question = create_question(question_text='Future question.', days=5)
+        url = reverse('polls:detail', args=(future_question.id,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_past_question(self):
+        """
+        The detail view of a question with a pub_date in the past
+        displays the question's text.
+        """
+        past_question = create_question(question_text='Past Question.', days=-5)
+        url = reverse('polls:detail', args=(past_question.id,))
+        response = self.client.get(url)
+        self.assertContains(response, past_question.question_text)
