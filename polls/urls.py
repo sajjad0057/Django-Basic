@@ -20,7 +20,7 @@ app_name = 'polls'
 # Use generic views: Less code is better
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
-    path('polls/<int:pk>/', views.DetailView.as_view(), name='detail'),
-    path('polls/<int:pk>/results/', views.ResultsView.as_view(), name='results'),
-    path('polls/<int:question_id>/vote/', views.vote, name='vote'),
+    path('<int:pk>/', views.DetailView.as_view(), name='detail'),
+    path('<int:pk>/results/', views.ResultsView.as_view(), name='results'),
+    path('<int:question_id>/vote/', views.vote, name='vote'),
 ]
